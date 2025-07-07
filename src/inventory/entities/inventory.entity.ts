@@ -17,4 +17,5 @@ export class InventoryItem {
   @Column('varchar',{ length: 50,default: 'available'})
   status: string; // available, reserved, sold
 
+
 }

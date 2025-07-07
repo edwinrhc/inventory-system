@@ -4,38 +4,68 @@ import { InventoryItem } from './entities/inventory.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
+import { Product } from "../products/entities/product.entity";
 
 @Injectable()
 export class InventoryService {
   
   constructor(
     @InjectRepository(InventoryItem)
-    private readonly repo: Repository<InventoryItem>
+    private readonly inventoryRepo: Repository<InventoryItem>,
+    @InjectRepository(Product)
+    private readonly productRepo: Repository<Product>
+
   ){}
 
   async create(dto: CreateInventoryDto): Promise<InventoryItem> {
-    const invetory = this.repo.create(dto);
-    return this.repo.save(invetory);
+    // Resolvemos la relación product
+    const product = await this.productRepo.findOne({
+      where: {id: dto.productId}
+    })
+    if(!product) throw new NotFoundException(`Producto ${dto.productId} no existe`);
+
+    const invetory = this.inventoryRepo.create({
+      product,
+      quantity: dto.quantity
+    });
+    return this.inventoryRepo.save(invetory);
   }
 
   findAll(): Promise<InventoryItem[]>{
-    return this.repo.find();
+    return this.inventoryRepo.find();
   }
 
   async findOne(id: string): Promise<InventoryItem>{
-    const inventory = await this.repo.findOne({where: {id}});
-    if(!inventory) throw new NotFoundException(`Producto ${id} no existe`);
+    const inventory = await this.inventoryRepo.findOne({where: {id}});
+    if(!inventory) throw new NotFoundException(`Inventory item ${id} no existe`);
     return inventory;
   }
 
   async update(id: string, dto: UpdateInventoryDto): Promise<InventoryItem> {
     const inventory = await this.findOne(id);
-    Object.assign(inventory, dto);
-    return this.repo.save(inventory);
+
+  // Si envían productId, resolvemos la nueva relación
+  if(dto.productId){
+    const product = await this.productRepo.findOne({
+        where: {id: dto.productId}
+      });
+    if(!product) throw new NotFoundException(`Producto ${dto.productId} no existe`);
+    inventory.product = product;
+  }
+
+    if (dto.quantity !== undefined) {
+      inventory.quantity = dto.quantity;
+    }
+
+    if (dto.status !== undefined) {
+      inventory.status = dto.status;
+    }
+
+    return this.inventoryRepo.save(inventory);
   }
 
   async remove(id: string): Promise<void>{
-    const result = await this.repo.delete(id);
+    const result = await this.inventoryRepo.delete(id);
     if(result.affected === 0){
       throw new NotFoundException(`Inventario ${id} no existe`);
     }
