@@ -1,0 +1,32 @@
+
+### Crear un nuevo producto
+POST http://localhost:3000/api/v1/products
+Content-Type: application/json
+
+{
+  "sku": "PROD-010",
+  "name": "Llave Inglesa 12\"",
+  "description": "Llave ajustable de 12 pulgadas con mango antideslizante.",
+  "price": 15.75
+}
+
+
+### Crear un registro de inventario
+POST http://localhost:3000/api/v1/inventory
+Content-Type: application/json
+
+{
+  "productId": "051f1fcf-3657-4275-ba2a-723447adc27a",
+  "quantity": 100,
+  "status": "available"
+}
+
+
+### Listar todos los productos
+GET http://localhost:3000/api/v1/products
+
+
+
+
+### Listar todos los inventarios
+GET http://localhost:3000/api/v1/inventory
