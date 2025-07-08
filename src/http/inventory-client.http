@@ -1,6 +1,6 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YTMyZjIxMi0zNmZkLTRmZmYtYmY0ZC01Y2VhMDk2ZjhiNDIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTE5NDkxNDksImV4cCI6MTc1MTk1Mjc0OX0.ym3NnPB701-SVAM5_lzLsbCRUMVjnyWyPCMIG_teEdI
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTE5OTcyNzEsImV4cCI6MTc1MjAwMDg3MX0.dpuyc4ui68gXPAOrm2I6OYAi_FEBi_YG9B3BYVgnIvY
 
 
 ### Crear producto (ADMIN/VENDOR)
@@ -34,4 +34,5 @@ Authorization: Bearer {{token}}
 
 
 ### Listar todos los inventarios
-GET http://localhost:3000/api/v1/inventory
+GET {{host}}/{{prefix}}/inventory
+Authorization: Bearer {{token}}
