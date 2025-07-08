@@ -42,7 +42,7 @@ export class ProductsController {
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
+  // @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
   @ApiOperation({ summary: 'Listar todos los productos' })
   @ApiResponse({ status: 200, description: 'Lista de productos.' })
   findAll() {
