@@ -18,8 +18,8 @@ async function bootstrap() {
 
   // Prefijo global para versionado de la API
   app.setGlobalPrefix('api/v1');        // si lo usas
-  app.enableCors();
-
+  // app.enableCors();
+  app.enableCors({ origin: 'http://localhost:4200' });
 
   // Configuración de Swagger global
   const config = new DocumentBuilder()
