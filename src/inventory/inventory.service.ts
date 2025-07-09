@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { Product } from "../products/entities/product.entity";
+import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
 
 @Injectable()
 export class InventoryService {
@@ -69,6 +70,21 @@ export class InventoryService {
     if(result.affected === 0){
       throw new NotFoundException(`Inventario ${id} no existe`);
     }
+  }
+
+  async adjust(id: string, dto: AdjustInventoryDto ){
+
+    const item = await this.inventoryRepo.findOne({where: {id}});
+
+    if(!item) throw new NotFoundException(`Ítem ${id} no existe`);
+
+    const nuevaCantidad = item.quantity + dto.delta;
+    if(nuevaCantidad < 0){
+      throw new NotFoundException(`Cantidad insuficiente para realizar la operación`);
+    }
+    item.quantity = nuevaCantidad;
+    return this.inventoryRepo.save(item);
+
   }
 
 

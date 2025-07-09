@@ -1,27 +1,43 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIwOTQ0NDcsImV4cCI6MTc1MjA5ODA0N30.QzuwIXLx2dAAbbSLOY0aRtKB-OWT8-VYKNF8B8gFNrk
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIwOTk2NzgsImV4cCI6MTc1MjEwMzI3OH0.XisEHrNt4AEwviUGe9XSPWcOoe2IyT226eMQO9__u3M
 
 
-### Crear producto (ADMIN/VENDOR)
+### LISTAR TODOS LOS PRODUCTOS (CON TOKEN)
+GET {{host}}/{{prefix}}/products
+Authorization: Bearer {{token}}
+
+
+### LISTAR PRODUCTO POR ID
+GET {{host}}/{{prefix}}/products/7808c5f7-8f6f-416f-a8ae-f56d4ff3c12c
+Authorization: Bearer {{token}}
+
+
+### CREAR PRODUCTO (ADMIN/VENDOR)
 POST {{host}}/{{prefix}}/products
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "sku": "PROD-021",
+  "sku": "PROD-02112",
   "name": "Llave de carraca 1/2\"",
   "description": "Llave de carraca con mango antideslizante.",
   "price": 22.50
 }
 
-
-### Listar todos los productos (con token)
-GET {{host}}/{{prefix}}/products
+### UPDATE PRODUCTO (ADMIN/VENDOR)
+PATCH {{host}}/{{prefix}}/products/c5e5fb58-7a51-4f40-8254-6e2383e6a9b1
 Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "sku": "PROD-0211",
+  "name": "Llave de carraca 1/2\"",
+  "description": "Llave de carraca con mango antideslizante.",
+  "price": 50.50
+}
 
 
-
-### Eliminar
+### ELIMINAR
 DELETE {{host}}/{{prefix}}/products/051f1fcf-3657-4275-ba2a-723447adc27a
 Authorization: Bearer {{token}}

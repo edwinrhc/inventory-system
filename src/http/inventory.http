@@ -1,7 +1,7 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIwOTQ0NDcsImV4cCI6MTc1MjA5ODA0N30.QzuwIXLx2dAAbbSLOY0aRtKB-OWT8-VYKNF8B8gFNrk
-
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxMDI0MDQsImV4cCI6MTc1MjEwNjAwNH0.6nJKFJkCk14fPdalMwW2LswTKsW5Jc0FwToKsmaEGgY
+@id  = 9652766e-4846-4a9d-a961-3a3559f7c243
 
 ### Crear un registro de inventario
 POST {{host}}/{{prefix}}/inventory
@@ -9,11 +9,48 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "productId": "c5e5fb58-7a51-4f40-8254-6e2383e6a9b1",
+  "productId": "7808c5f7-8f6f-416f-a8ae-f56d4ff3c12c",
   "quantity": 100,
   "status": "available"
 }
 
 ### Listar todos los inventarios
-GET {{host}}/{{prefix}}/inventory
+GET {{host}}/{{prefix}}/inventory/
 Authorization: Bearer {{token}}
+
+### Obtener un ítem por ID
+GET {{host}}/{{prefix}}/inventory/{{id}}
+Authorization: Bearer {{token}}
+
+### Actualizar un ítem
+PATCH {{host}}/{{prefix}}/inventory/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 501
+}
+
+### Eliminar un ítem
+DELETE {{host}}/{{prefix}}/inventory/{{id}}
+Authorization: Bearer {{token}}
+
+
+
+### Opción  semántica: entrada +20
+PATCH {{host}}/{{prefix}}/inventory/{{id}}/in
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "delta": 500
+}
+
+### Opción semántica: salida  –20
+PATCH {{host}}/{{prefix}}/inventory/{{id}}/out
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "delta": 1001
+}

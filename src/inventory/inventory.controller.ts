@@ -23,6 +23,7 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
+import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
 
 @ApiTags('inventory')
 @ApiBearerAuth()
@@ -79,4 +80,26 @@ export class InventoryController {
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.remove(id);
   }
+
+  @Patch(':id/in')
+  @Roles(Role.ADMIN,Role.VENDOR)
+  @ApiOperation({summary: 'Registrar entrada de stock'})
+  in(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AdjustInventoryDto,
+  ){
+    return this.service.adjust(id,{ delta: Math.abs(dto.delta)});
+  }
+
+  @Patch(':id/out')
+  @Roles(Role.ADMIN,Role.VENDOR)
+  @ApiOperation({summary: 'Registrar salida de stock'})
+  out(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AdjustInventoryDto,
+  ){
+    return this.service.adjust(id,{ delta: -Math.abs(dto.delta)});
+  }
+
+
 }
