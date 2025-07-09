@@ -1,0 +1,19 @@
+@host = http://localhost:3000
+@prefix = api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIwOTQ0NDcsImV4cCI6MTc1MjA5ODA0N30.QzuwIXLx2dAAbbSLOY0aRtKB-OWT8-VYKNF8B8gFNrk
+
+
+### Crear un registro de inventario
+POST {{host}}/{{prefix}}/inventory
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": "c5e5fb58-7a51-4f40-8254-6e2383e6a9b1",
+  "quantity": 100,
+  "status": "available"
+}
+
+### Listar todos los inventarios
+GET {{host}}/{{prefix}}/inventory
+Authorization: Bearer {{token}}

@@ -1,12 +1,14 @@
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 
 export class LoginDto {
-  
-  @IsString()
+
+  @IsString({ message: 'El nombre de usuario debe ser texto' })
+  @IsNotEmpty({ message: 'El nombre de usuario no puede estar vacío' })
   username: string;
-  
-  @IsString()
+
+  @IsString({ message: 'La contraseña debe ser texto' })
+  @IsNotEmpty({ message: 'La contraseña no puede estar vacía' })
   password: string;
   
 }
