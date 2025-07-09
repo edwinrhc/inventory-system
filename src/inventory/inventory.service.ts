@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { InventoryItem } from './entities/inventory.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
@@ -85,6 +85,20 @@ export class InventoryService {
     item.quantity = nuevaCantidad;
     return this.inventoryRepo.save(item);
 
+  }
+
+
+  async findLowStock(threshold: number){
+    return this.inventoryRepo.find({where: {quantity: LessThanOrEqual(threshold)}})
+  }
+
+
+  async search(name?: string, status?: string) {
+    const qb = this.inventoryRepo.createQueryBuilder('inv')
+      .leftJoinAndSelect('inv.product', 'prod');
+    if (name)    qb.andWhere('prod.name LIKE :name', { name: `%${name}%` });
+    if (status)  qb.andWhere('inv.status = :status', { status });
+    return qb.getMany();
   }
 
 

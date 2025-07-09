@@ -1,27 +1,31 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
-import { AuthGuard }         from '@nestjs/passport';
-import { RolesGuard }        from '../auth/roles.guard';
-import { Roles }             from '../auth/roles.decorator';
-import { Role }              from '../users/role.enum';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '../users/role.enum';
 import {
   ApiBearerAuth,
-  ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
 
@@ -82,23 +86,45 @@ export class InventoryController {
   }
 
   @Patch(':id/in')
-  @Roles(Role.ADMIN,Role.VENDOR)
-  @ApiOperation({summary: 'Registrar entrada de stock'})
-  in(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: AdjustInventoryDto,
-  ){
-    return this.service.adjust(id,{ delta: Math.abs(dto.delta)});
+  @Roles(Role.ADMIN, Role.VENDOR)
+  @ApiOperation({ summary: 'Registrar entrada de stock' })
+  in(@Param('id', ParseUUIDPipe) id: string, @Body() dto: AdjustInventoryDto) {
+    return this.service.adjust(id, { delta: Math.abs(dto.delta) });
   }
 
   @Patch(':id/out')
-  @Roles(Role.ADMIN,Role.VENDOR)
-  @ApiOperation({summary: 'Registrar salida de stock'})
-  out(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: AdjustInventoryDto,
-  ){
-    return this.service.adjust(id,{ delta: -Math.abs(dto.delta)});
+  @Roles(Role.ADMIN, Role.VENDOR)
+  @ApiOperation({ summary: 'Registrar salida de stock' })
+  out(@Param('id', ParseUUIDPipe) id: string, @Body() dto: AdjustInventoryDto) {
+    return this.service.adjust(id, { delta: -Math.abs(dto.delta) });
+  }
+
+  @Get('low-stock')
+  @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
+  @ApiOperation({ summary: 'Listar ítems con stock por debajo del umbral' })
+  @ApiQuery({
+    name: 'threshold',
+    description: 'Cantidad mínima de stock',
+    required: false,
+    type: Number,
+  })
+  lowStock(
+    @Query('threshold', new DefaultValuePipe(10), ParseIntPipe)
+    threshold: number,
+  ) {
+    return this.service.findLowStock(threshold);
+  }
+
+
+  @Get('search')
+  @ApiOperation({ summary: 'Buscar inventario por producto o estado' })
+  @ApiQuery({ name: 'productName', required: false })
+  @ApiQuery({ name: 'status', required: false, enum: ['available','reserved','sold'] })
+  search(
+    @Query('productName') name?: string,
+    @Query('status') status?: 'available' | 'reserved' | 'sold',
+  ) {
+    return this.service.search(name, status);
   }
 
 
