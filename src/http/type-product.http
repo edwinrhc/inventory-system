@@ -1,0 +1,40 @@
+@host = http://localhost:3000
+@prefix = api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMmVhOTJiYy0zZGJkLTRmMmQtYjY4ZS05MmNkNTU2MjIxMGYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxNzU0NzQsImV4cCI6MTc1MjE3OTA3NH0.gEzdvO0t53zZwNRsIQXmhdvWZDea2WsZRjJSXq2nVpk
+
+
+### CREAR PRODUCTO (ADMIN/VENDOR)
+POST {{host}}/{{prefix}}/product-types
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Herramientas",
+  "description": "Productos de ferretería"
+}
+
+
+### LISTAR TODOS TIPOS DE PRODUCTOS
+GET {{host}}/{{prefix}}/product-types
+Authorization: Bearer {{token}}
+
+
+### LISTAR TIPO PRODUCTO POR ID
+GET {{host}}/{{prefix}}/product-types/83edf977-8cc2-49b1-a47b-59b58cdc0e12
+Authorization: Bearer {{token}}
+
+
+### ACTUALIZAR TIPO PRODUCTO (ADMIN/VENDOR)
+PATCH {{host}}/{{prefix}}/product-types/83edf977-8cc2-49b1-a47b-59b58cdc0e12
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Tornillos, Clavos y Fijación",
+  "description": "Productos de ferretería"
+}
+
+
+### ELIMINAR
+DELETE {{host}}/{{prefix}}/product-types/83edf977-8cc2-49b1-a47b-59b58cdc0e12
+Authorization: Bearer {{token}}

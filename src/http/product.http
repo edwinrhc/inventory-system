@@ -1,6 +1,6 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZGZlZWFmMC1mODQyLTRiMDEtOWMwZS0zNGEzMDU2NWNkNmQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxMjM2NzYsImV4cCI6MTc1MjEyNzI3Nn0.TEnDtV7nUoLxGtqynT5n5hOokbbPKG6kUHp579HlKaM
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMmVhOTJiYy0zZGJkLTRmMmQtYjY4ZS05MmNkNTU2MjIxMGYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxNzU0NzQsImV4cCI6MTc1MjE3OTA3NH0.gEzdvO0t53zZwNRsIQXmhdvWZDea2WsZRjJSXq2nVpk
 
 
 ### LISTAR TODOS LOS PRODUCTOS (CON TOKEN)
@@ -9,7 +9,7 @@ Authorization: Bearer {{token}}
 
 
 ### LISTAR PRODUCTO POR ID
-GET {{host}}/{{prefix}}/products/7808c5f7-8f6f-416f-a8ae-f56d4ff3c12c
+GET {{host}}/{{prefix}}/products/fdfa0192-4586-4e0b-b2e7-90d2df6db087
 Authorization: Bearer {{token}}
 
 

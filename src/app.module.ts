@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TransactionsModule } from './inventory/transactions.module';
+import { ProductTypesModule } from './product-types/product-types.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { TransactionsModule } from './inventory/transactions.module';
     TransactionsModule,
     UsersModule,
     AuthModule,
+    ProductTypesModule,
 
 
   ],

@@ -1,5 +1,12 @@
-import { PrimaryGeneratedColumn, Column, Entity, OneToMany } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  OneToMany,
+  ManyToOne, JoinColumn,
+} from 'typeorm';
 import { InventoryItem } from '../../inventory/entities/inventory.entity';
+import { ProductType } from '../../product-types/product-type.entity';
 
 @Entity('products')
 export class Product {
@@ -24,5 +31,13 @@ export class Product {
     cascade: ['remove'],    // opcional: activa borrado en cascada desde TypeORM
   })
   inventories: InventoryItem[];
+  
+  @ManyToOne(() => ProductType, (type) => type.products, {nullable: true})
+  @JoinColumn({name: 'productTypeId'})
+  productType?: ProductType;
+
+  @Column({type: 'uuid', nullable: true})
+  productTypeId?: string;
+  
 
 }
