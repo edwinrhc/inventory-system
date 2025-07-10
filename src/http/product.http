@@ -1,6 +1,6 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIwOTk2NzgsImV4cCI6MTc1MjEwMzI3OH0.XisEHrNt4AEwviUGe9XSPWcOoe2IyT226eMQO9__u3M
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZGZlZWFmMC1mODQyLTRiMDEtOWMwZS0zNGEzMDU2NWNkNmQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxMjM2NzYsImV4cCI6MTc1MjEyNzI3Nn0.TEnDtV7nUoLxGtqynT5n5hOokbbPKG6kUHp579HlKaM
 
 
 ### LISTAR TODOS LOS PRODUCTOS (CON TOKEN)
@@ -19,7 +19,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "sku": "PROD-02112",
+  "sku": "PROD-7",
   "name": "Llave de carraca 1/2\"",
   "description": "Llave de carraca con mango antideslizante.",
   "price": 22.50

@@ -1,7 +1,7 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OWNkY2E4Ny0wOWQ2LTRkY2QtOTBmZi04NjI3Njc4ZWExM2EiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxMDI0MDQsImV4cCI6MTc1MjEwNjAwNH0.6nJKFJkCk14fPdalMwW2LswTKsW5Jc0FwToKsmaEGgY
-@id  = 9652766e-4846-4a9d-a961-3a3559f7c243
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YTMyZjIxMi0zNmZkLTRmZmYtYmY0ZC01Y2VhMDk2ZjhiNDIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxMjI2ODcsImV4cCI6MTc1MjEyNjI4N30.qhxCx_dtxL6kZfz5D26_yI-KmWA3RLiT6wNmM48dDCs
+@id  = 3ffaa8fa-04cc-4c74-b96d-77c3b38819ad
 
 ### Crear un registro de inventario
 POST {{host}}/{{prefix}}/inventory
@@ -9,8 +9,8 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "productId": "7808c5f7-8f6f-416f-a8ae-f56d4ff3c12c",
-  "quantity": 100,
+  "productId": "6d3fe168-ab5b-47e9-b522-fbc9456e16b3",
+  "quantity": 5,
   "status": "available"
 }
 
@@ -52,5 +52,28 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "delta": 1001
+  "delta": 2
 }
+
+
+### Listar stock bajo (umbral 5)
+GET {{host}}/{{prefix}}/inventory/reports/low-stock?threshold=5
+Authorization: Bearer {{token}}
+
+
+
+### Buscar por nombre de producto “Martillo”
+GET {{host}}/{{prefix}}/inventory/product/search?productName=Martillo
+Authorization: Bearer {{token}}
+
+### Buscar por estado
+GET {{host}}/{{prefix}}/inventory/product/search?status=reserved
+Authorization: Bearer {{token}}
+
+### Buscar por nombre y estado
+GET {{host}}/{{prefix}}/inventory/product/search?productName=martillo&status=available
+Authorization: Bearer {{token}}
+
+### Búsqueda sin filtros (devuelve todo)
+GET {{host}}/{{prefix}}/inventory/product/search
+Authorization: Bearer {{token}}
