@@ -99,7 +99,7 @@ export class InventoryController {
     return this.service.adjust(id, { delta: -Math.abs(dto.delta) });
   }
 
-  @Get('low-stock')
+  @Get('reports/low-stock')
   @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
   @ApiOperation({ summary: 'Listar ítems con stock por debajo del umbral' })
   @ApiQuery({
@@ -116,7 +116,7 @@ export class InventoryController {
   }
 
 
-  @Get('search')
+  @Get('product/search')
   @ApiOperation({ summary: 'Buscar inventario por producto o estado' })
   @ApiQuery({ name: 'productName', required: false })
   @ApiQuery({ name: 'status', required: false, enum: ['available','reserved','sold'] })
