@@ -6,6 +6,8 @@ import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { Product } from "../products/entities/product.entity";
 import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { Transaction } from './entities/transaction.entity';
 
 @Injectable()
 export class InventoryService {
@@ -14,7 +16,9 @@ export class InventoryService {
     @InjectRepository(InventoryItem)
     private readonly inventoryRepo: Repository<InventoryItem>,
     @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>
+    private readonly productRepo: Repository<Product>,
+    @InjectRepository(Transaction)
+    private readonly txtRepo: Repository<Transaction>
 
   ){}
 
@@ -87,18 +91,48 @@ export class InventoryService {
 
   }
 
-
   async findLowStock(threshold: number){
-    return this.inventoryRepo.find({where: {quantity: LessThanOrEqual(threshold)}})
+    return this.inventoryRepo.find({
+      where: {quantity: LessThanOrEqual(threshold)},
+      relations: ['product']
+
+    })
   }
 
 
   async search(name?: string, status?: string) {
     const qb = this.inventoryRepo.createQueryBuilder('inv')
-      .leftJoinAndSelect('inv.product', 'prod');
+      .leftJoinAndSelect('inv.product', 'prod'); // Incluye product en el JSON
+
     if (name)    qb.andWhere('prod.name LIKE :name', { name: `%${name}%` });
     if (status)  qb.andWhere('inv.status = :status', { status });
     return qb.getMany();
+  }
+  async createTransaction(dto: CreateTransactionDto){
+    // Verificar existencia del ítem
+    const item = await this.findOne(dto.itemId);
+    // ajustar el stock
+    const adjusted = await this.adjust(item.id, {delta: dto.delta});
+    //Crear registro de transacción
+    const tx = this.txtRepo.create({
+      item,
+      delta: dto.delta,
+      reason: dto.reason
+    });
+    await this.txtRepo.save(tx);
+    return { transaction: tx, updatedInventory: adjusted };
+  }
+
+  async getTransactions(itemId: string, limit?: number){
+    const qb = this.txtRepo.createQueryBuilder('tx')
+      .where('txt.item.id = :itemId', {itemId})
+      .orderBy('tx.createdAt', 'DESC');
+
+    if(limit){
+      qb.limit(limit);
+    }
+    return qb.getMany();
+
   }
 
 
