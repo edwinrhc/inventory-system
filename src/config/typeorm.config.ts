@@ -9,5 +9,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   password: process.env.DB_PASS || '123456',
   database: process.env.DB_NAME || 'inventory_db',
   entities: [join(__dirname, '/../**/*.entity{.ts,.js}')],
+  //TODO: Importante
   synchronize: true, // Sólo en desarrollo
+  dropSchema: true,
 };
