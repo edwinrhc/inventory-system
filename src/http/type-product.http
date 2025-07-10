@@ -34,7 +34,6 @@ Content-Type: application/json
   "description": "Productos de ferretería"
 }
 
-
 ### ELIMINAR
 DELETE {{host}}/{{prefix}}/product-types/83edf977-8cc2-49b1-a47b-59b58cdc0e12
 Authorization: Bearer {{token}}
