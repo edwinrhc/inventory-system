@@ -9,6 +9,8 @@ import { Product } from '../products/entities/product.entity';
 import { InventoryItem } from '../inventory/entities/inventory.entity';
 import { Transaction } from '../inventory/entities/transaction.entity';
 import { ProductType } from '../product-types/product-type.entity';
+import { InventoryDocument } from '../inventory/entities/inventory-document.entity';
+import { InventoryLine } from '../inventory/entities/inventory-line.entity';
 
 const seedDataSourceOptions: DataSourceOptions = {
   type: 'mysql',
@@ -26,8 +28,6 @@ const seedDataSourceOptions: DataSourceOptions = {
 async function runSeeds() {
   const ds = new DataSource(seedDataSourceOptions);
   await ds.initialize();
-
-
 
 
   const transactionRepo = ds.getRepository(Transaction);
@@ -141,6 +141,51 @@ async function runSeeds() {
     );
   }
   console.log('✅ Inventario seed completado');
+
+
+  // 5) Documentos de Inventario y Líneas
+  const docRepo  = ds.getRepository(InventoryDocument);
+  const lineRepo = ds.getRepository(InventoryLine);
+
+  // 5.1) Creamos una guía de ingreso con 2 líneas
+  const adminUser = await userRepo.findOneBy({ username: 'admin' });
+  const docIn = docRepo.create({
+    type:      'IN' as const,
+    date:      new Date(),
+    reference: 'SEED-IN-001',
+    notes:     'Ingreso semilla',
+    userId:    adminUser.id,
+    lines: [
+      { productId: allProducts[0].id, quantity: 5, unitPrice: 15.75, detail: 'Lote A' },
+      { productId: allProducts[1].id, quantity: 3, unitPrice: 7.20,  detail: 'Lote B' },
+    ],
+  });
+  await docRepo.save(docIn);
+  console.log(`✅ Documento IN creado: ${docIn.id}`);
+
+  // 5.2) Creamos una guía de salida con 1 línea
+  const docOut = docRepo.create({
+    type:      'OUT' as const,
+    date:      new Date(),
+    reference: 'SEED-OUT-001',
+    notes:     'Salida semilla',
+    userId:    adminUser.id,
+    lines: [
+      { productId: allProducts[2].id, quantity: 2, detail: 'Para demo' },
+    ],
+  });
+  await docRepo.save(docOut);
+  console.log(`✅ Documento OUT creado: ${docOut.id}`);
+
+  // 5.3) Ajustamos el stock manualmente para reflejar estos movimientos
+  await Promise.all(docIn.lines.map(line =>
+    inventoryRepo.increment({ productId: line.productId }, 'quantity', line.quantity)
+  ));
+  await Promise.all(docOut.lines.map(line =>
+    inventoryRepo.decrement({ productId: line.productId }, 'quantity', line.quantity)
+  ));
+  console.log('✅ Ajuste de stock por documentos completo');
+
 
   await ds.destroy();
   console.log('Seed completo');
