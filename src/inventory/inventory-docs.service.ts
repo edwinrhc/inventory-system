@@ -1,53 +1,85 @@
-import { Injectable } from '@nestjs/common';
+// src/inventory/inventory-docs.service.ts
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InventoryDocument } from './entities/inventory-document.entity';
-import { DataSource, Repository } from 'typeorm';
 import { InventoryLine } from './entities/inventory-line.entity';
 import { InventoryItem } from './entities/inventory.entity';
+import { DataSource, Repository } from 'typeorm';
 import { CreateInventoryDocumentDto } from './dto/create-inventory-document.dto';
 
 @Injectable()
 export class InventoryDocsService {
-
+  private readonly logger = new Logger(InventoryDocsService.name);
 
   constructor(
     @InjectRepository(InventoryDocument)
-    private docRepo: Repository<InventoryDocument>,
+    private readonly docRepo: Repository<InventoryDocument>,
     @InjectRepository(InventoryLine)
-    private lineRepo: Repository<InventoryLine>,
+    private readonly lineRepo: Repository<InventoryLine>,
     @InjectRepository(InventoryItem)
-    private itemRepo: Repository<InventoryItem>,
-    private dataSource: DataSource
+    private readonly itemRepo: Repository<InventoryItem>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createDocument(
     dto: CreateInventoryDocumentDto,
     userId: string,
-  ): Promise<InventoryDocument>{
+  ): Promise<InventoryDocument> {
+    // Creamos un query runner para transacción
+    const runner = this.dataSource.createQueryRunner();
+    await runner.connect();
+    await runner.startTransaction();
 
-    // Creamos documento con líneas (cascade)
-    const doc = this.docRepo.create({
-      ...dto,
-      date: new Date(dto.date),
-      userId
-    });
+    try {
+      // 1) Construir manualmente la entidad de documento
+      const doc = new InventoryDocument();
+      doc.type      = dto.type;
+      doc.reference = dto.reference;
+      doc.date      = new Date(dto.date);
+      doc.notes     = dto.notes;
+      doc.userId    = userId;                        // ← ¡asignación explícita!
 
-    const savedDoc = await this.docRepo.save(doc);
+      // 2) Construir manualmente cada línea y asignar al documento
+      doc.lines = dto.lines.map(lineDto => {
+        const line = new InventoryLine();
+        line.productId = lineDto.productId;
+        line.quantity  = lineDto.quantity;
+        line.unitPrice = lineDto.unitPrice;
+        line.detail    = lineDto.detail;
+        return line;
+      });
 
-    // Ajustamos stock línea
-    for(const line of savedDoc.lines){
-      const delta = dto.type === 'IN' ? line.quantity : -line.quantity;
-      await this.itemRepo
-        .createQueryBuilder()
-        .update()
-        .set({quantity: () => `quantity + ${delta}`})
-        .where('productId = :pid', { pid: line.productId })
-        .execute()
+      // 3) Guardar el documento con cascade de líneas
+      const savedDoc = await runner.manager.save(doc);
+
+      // 4) Ajustar el stock por cada línea
+      for (const line of savedDoc.lines) {
+        const delta = dto.type === 'IN' ? line.quantity : -line.quantity;
+        await runner.manager
+          .createQueryBuilder(InventoryItem, 'item')
+          .update()
+          .set({ quantity: () => `quantity + ${delta}` })
+          .where('productId = :pid', { pid: line.productId })
+          .execute();
+      }
+
+      // 5) Confirmar transacción
+      await runner.commitTransaction();
+      return savedDoc;
+
+    } catch (error) {
+      // Si algo falla, anula todo para no dejar datos a medias
+      await runner.rollbackTransaction();
+      this.logger.error('Error en createDocument', error.stack);
+      throw new InternalServerErrorException(
+        'No se pudo crear documento de inventario',
+      );
+    } finally {
+      await runner.release();
     }
-
-    return savedDoc;
   }
-
-
-
 }

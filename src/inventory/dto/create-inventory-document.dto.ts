@@ -1,4 +1,14 @@
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 
@@ -28,7 +38,7 @@ export class CreateInventoryDocumentDto{
   type: 'IN'| 'OUT';
 
   @IsString()
-  references: string;
+  reference: string;
 
   @IsDateString()
   date: string;
@@ -37,6 +47,7 @@ export class CreateInventoryDocumentDto{
   @IsString()
   notes?: string;
 
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateInventoryLineDto)
   lines: CreateInventoryLineDto[];

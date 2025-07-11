@@ -6,6 +6,7 @@ import { InventoryDocsService } from './inventory-docs.service';
 import { Role } from '../users/role.enum';
 import { Roles } from '../auth/roles.decorator';
 import { CreateInventoryDocumentDto } from './dto/create-inventory-document.dto';
+import { GetUserId } from '../common/decorators/get-user-id.decorator';
 
 @ApiTags('inventory-documents')
 @ApiBearerAuth()
@@ -23,9 +24,9 @@ export class InventoryDocsController {
   @ApiOperation({ summary: 'Crear guía de Ingreso/Salida' })
   create(
     @Body() dto: CreateInventoryDocumentDto,
-    @Req() req,
+    @GetUserId() userId: string,     // ← recupera directamente
   ) {
-    return this.docsService.createDocument(dto, req.user.id);
+    return this.docsService.createDocument(dto, userId);
   }
 
 
