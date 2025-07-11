@@ -4,11 +4,11 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, ParseBoolPipe,
   ParseUUIDPipe,
   Patch,
-  Post,
-  UseGuards,
+  Post, Query,
+  UseGuards, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -24,6 +24,10 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageDto } from '../common/dto/page.dto';
+import { Product } from './entities/product.entity';
+import { UpdateStatusDto } from '../common/dto/update-status.dto';
 
 @ApiTags('products')
 @ApiBearerAuth()                       // Indica que este controlador usa JWT Bearer
@@ -37,16 +41,27 @@ export class ProductsController {
   @ApiOperation({ summary: 'Crear un nuevo producto' })
   @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' })
   @ApiResponse({ status: 403, description: 'Forbidden. Rol no autorizado.' })
-  create(@Body() dto: CreateProductDto) {
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  create(@Body() dto: CreateProductDto): Promise<Product> {
     return this.service.create(dto);
   }
 
-  @Get()
+ /* @Get()
   @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
   @ApiOperation({ summary: 'Listar todos los productos' })
   @ApiResponse({ status: 200, description: 'Lista de productos.' })
   findAll() {
     return this.service.findAll();
+  }*/
+
+  //Note: Con Paginación
+  @Get()
+  @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
+  @ApiOperation({ summary: 'Listar todos los productos' })
+  @ApiResponse({ status: 200, description: 'Lista de productos.' })
+  findAll(
+    @Query() pageOptions: PageOptionsDto): Promise<PageDto<Product>>{
+    return this.service.findAll(pageOptions);
   }
 
   @Get(':id')
@@ -81,4 +96,19 @@ export class ProductsController {
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.remove(id);
   }
+
+  @Patch(':id/status')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Actualizar estado del producto por ID' })
+  @ApiParam({ name: 'id', description: 'UUID del producto' })
+  @ApiResponse({ status: 200, description: 'Producto actualizado.' })
+  @ApiResponse({ status: 404, description: 'Producto no existe.' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  async updateStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateStatusDto
+  ):Promise<Product>{
+    return this.service.updateStatus(id,dto.isActive);
+  }
+
 }

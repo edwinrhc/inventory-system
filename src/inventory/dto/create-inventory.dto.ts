@@ -6,7 +6,7 @@ export class CreateInventoryDto{
   @IsUUID()
   productId: string;
 
-  @IsInt()
+  @IsInt()ng
   @Min(0)
   quantity: number;
 

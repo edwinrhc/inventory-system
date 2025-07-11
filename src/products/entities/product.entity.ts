@@ -3,10 +3,11 @@ import {
   Column,
   Entity,
   OneToMany,
-  ManyToOne, JoinColumn,
+  ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn,
 } from 'typeorm';
 import { InventoryItem } from '../../inventory/entities/inventory.entity';
-import { ProductType } from '../../product-types/product-type.entity';
+import { ProductType } from '../../product-types/entities/product-type.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity('products')
 export class Product {
@@ -17,7 +18,7 @@ export class Product {
   @Column({unique: true})
   sku: string;
 
-  @Column()
+  @Column({length: 255, unique: true})
   name: string;
 
   @Column('text', {nullable: true})
@@ -38,6 +39,22 @@ export class Product {
 
   @Column({type: 'uuid', nullable: true})
   productTypeId?: string;
+
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
+  @ManyToOne(() => User, { nullable: true, eager: true })
+  createdBy?: User;
+
+  @ManyToOne(() => User, { nullable: true, eager: true })
+  updatedBy?: User;
   
 
 }

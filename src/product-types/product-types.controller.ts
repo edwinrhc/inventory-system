@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+  UsePipes, ValidationPipe,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation, ApiParam,
@@ -11,6 +23,11 @@ import { ProductTypesService } from './product-types.service';
 import { CreateProductTypeDto } from './dto/create-product-type.dto';
 import { Role } from '../users/role.enum';
 import { Roles } from '../auth/roles.decorator';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageDto } from '../common/dto/page.dto';
+import { ProductType } from './entities/product-type.entity';
+import { UpdateStatusDto } from '../common/dto/update-status.dto';
+import { Product } from '../products/entities/product.entity';
 
 @ApiTags('Product Types')
 @ApiBearerAuth()
@@ -31,12 +48,21 @@ export class ProductTypesController {
     return this.service.create(dto);
   }
 
-  @Get()
+ /* @Get()
   @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
   @ApiOperation({ summary: 'Listar todos los tipos de productos' })
   @ApiResponse({ status: 200, description: 'Lista de tipos de productos.' })
   findAll(){
     return this.service.findAll();
+  }*/
+
+  //Note: Paginación
+  @Get()
+  @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
+  @ApiOperation({ summary: 'Listar todos los tipos de productos' })
+  @ApiResponse({ status: 200, description: 'Lista de tipos de productos.' })
+  findAll(@Query() pageOptions: PageOptionsDto): Promise<PageDto<ProductType>>{
+    return this.service.findAll(pageOptions);
   }
 
   @Get(':id')
@@ -72,6 +98,20 @@ export class ProductTypesController {
   @ApiResponse({ status: 403, description: 'Forbidden. Rol no autorizado.' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.remove(id);
+  }
+
+  @Patch(':id/status')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Actualizar estado del tipo del producto por ID' })
+  @ApiParam({ name: 'id', description: 'UUID del tipo del producto' })
+  @ApiResponse({ status: 200, description: 'Tipo Producto actualizado.' })
+  @ApiResponse({ status: 404, description: 'Tipo Producto no existe.' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  async updateTypeProductStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateStatusDto
+  ):Promise<ProductType>{
+    return this.service.updateStatus(id,dto.isActive);
   }
 
 

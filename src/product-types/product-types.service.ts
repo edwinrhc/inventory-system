@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ProductType } from './product-type.entity';
-import { Repository } from 'typeorm';
+import { ProductType } from './entities/product-type.entity';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductTypeDto } from './dto/create-product-type.dto';
 import { UpdateProductTypeDto } from './dto/update-product-type.dto';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
 
 @Injectable()
 export class ProductTypesService {
@@ -18,8 +20,19 @@ export class ProductTypesService {
     return this.repo.save(productType);
   }
 
-  findAll(): Promise<ProductType[]> {
-    return this.repo.find();
+  // findAll(): Promise<ProductType[]> {
+  //   return this.repo.find();
+  // }
+
+  async findAll(pageOptions: PageOptionsDto): Promise<PageDto<ProductType>>{
+    const { page, limit, filter} = pageOptions;
+    const [items, totalItems] = await this.repo.findAndCount({
+      where: { description: ILike(`%${filter}%`) },
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {  createdAt: 'DESC' }
+      });
+      return new PageDto<ProductType>(items, totalItems, {page, limit});
   }
 
   async findOne(id: string): Promise<ProductType>{
@@ -41,6 +54,12 @@ export class ProductTypesService {
       throw new NotFoundException(`Tipo de producto ${id} no existe`);
     }
   }
+
+  async updateStatus(id: string, isActive: boolean): Promise<ProductType>{
+    await this.repo.update(id, {isActive});
+    return this.findOne(id);
+  }
+
 
 
 }

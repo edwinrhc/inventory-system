@@ -1,10 +1,15 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMmVhOTJiYy0zZGJkLTRmMmQtYjY4ZS05MmNkNTU2MjIxMGYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIxNzU0NzQsImV4cCI6MTc1MjE3OTA3NH0.gEzdvO0t53zZwNRsIQXmhdvWZDea2WsZRjJSXq2nVpk
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzUyZGNiMi03MTgxLTQ3NTgtYjU3Zi00YjM4ZjdmMjRlMDkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIyNTIxNDYsImV4cCI6MTc1MjI1NTc0Nn0.1CFz0LnZNMaFrmB7lJfS68NqTH_E7DhJ6ACQ_hkHCh4
 
 
 ### LISTAR TODOS LOS PRODUCTOS (CON TOKEN)
 GET {{host}}/{{prefix}}/products
+Authorization: Bearer {{token}}
+
+
+### LISTAR TODOS LOS PRODUCTOS Paginados (CON TOKEN)
+GET {{host}}/{{prefix}}/products?page=3&limit=5
 Authorization: Bearer {{token}}
 
 
