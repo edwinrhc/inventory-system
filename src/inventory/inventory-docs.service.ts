@@ -90,7 +90,7 @@ export class InventoryDocsService {
     const { page, limit, filter} = pageOptions;
 
     const qb = this.docRepo.createQueryBuilder('doc')
-      // .orderBy('doc.createdAt', 'DESC')
+      .orderBy('doc.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit);
 
