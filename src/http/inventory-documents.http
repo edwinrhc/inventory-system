@@ -1,0 +1,8 @@
+@host = http://localhost:3000
+@prefix = api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzOTU4ZThkMy0zYTgwLTQyNDctYmViNi1kNzFhODA0MDYwYzgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIzNDA3NTksImV4cCI6MTc1MjM0NDM1OX0.asg6oOmaHo7L2qKXA8bQl00Uul_T2ZCzNdh7B3Kptlw
+
+
+### Listar Ingreso y salida
+GET {{host}}/{{prefix}}/inventory-documents?page=1&limit=5
+Authorization: Bearer {{token}}

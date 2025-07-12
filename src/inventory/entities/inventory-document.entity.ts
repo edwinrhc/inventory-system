@@ -1,4 +1,13 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { InventoryLine } from './inventory-line.entity';
 
@@ -30,6 +39,22 @@ export class InventoryDocument {
 
   @OneToMany( ()=> InventoryLine, line => line.document, {cascade: true})
   lines: InventoryLine[];
+
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
+  @ManyToOne(() => User, { nullable: true, eager: true })
+  createdBy?: User;
+
+  @ManyToOne(() => User, { nullable: true, eager: true })
+  updatedBy?: User;
 
 
 

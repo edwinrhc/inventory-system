@@ -173,6 +173,8 @@ async function runSeeds() {
     reference: 'SEED-IN-001',
     notes:     'Ingreso semilla',
     userId:    adminUser.id,
+    createdBy: adminUser,
+    updatedBy: adminUser,
     lines: [
       { productId: allProducts[0].id, quantity: 5, unitPrice: 15.75, detail: 'Lote A' },
       { productId: allProducts[1].id, quantity: 3, unitPrice: 7.20,  detail: 'Lote B' },
@@ -188,6 +190,8 @@ async function runSeeds() {
     reference: 'SEED-OUT-001',
     notes:     'Salida semilla',
     userId:    adminUser.id,
+    createdBy: adminUser,
+    updatedBy: adminUser,
     lines: [
       { productId: allProducts[2].id, quantity: 2, detail: 'Para demo' },
     ],

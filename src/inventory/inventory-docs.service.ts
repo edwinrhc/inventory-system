@@ -10,6 +10,8 @@ import { InventoryLine } from './entities/inventory-line.entity';
 import { InventoryItem } from './entities/inventory.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateInventoryDocumentDto } from './dto/create-inventory-document.dto';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from 'src/common/dto/page-options.dto';
 
 @Injectable()
 export class InventoryDocsService {
@@ -82,4 +84,25 @@ export class InventoryDocsService {
       await runner.release();
     }
   }
+
+
+  async findAll(pageOptions: PageOptionsDto): Promise<PageDto<InventoryDocument>>{
+    const { page, limit, filter} = pageOptions;
+
+    const qb = this.docRepo.createQueryBuilder('doc')
+      // .orderBy('doc.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    if(filter?.trim()){
+      qb.where('LOWER(doc.reference) LIKE LOWER(:filter)', { filter: `%${filter}%` });
+    }
+
+    const [items, totalItems] = await qb.getManyAndCount();
+
+    return new PageDto<InventoryDocument>(items, totalItems, { page, limit });
+
+  }
+
+
 }

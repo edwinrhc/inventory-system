@@ -77,3 +77,4 @@ Authorization: Bearer {{token}}
 ### Búsqueda sin filtros (devuelve todo)
 GET {{host}}/{{prefix}}/inventory/product/search
 Authorization: Bearer {{token}}
+
