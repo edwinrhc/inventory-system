@@ -38,9 +38,9 @@ export class ProductsService {
     return this.repo.save(prod);
   }
 
-  // findAll(): Promise<Product[]>{
-  //   return this.repo.find();
-  // }
+  listarTodoSinPaginar(): Promise<Product[]>{
+    return this.repo.find();
+  }
 
   // Note: Con Paginación
   async findAll(pageOptions: PageOptionsDto): Promise<PageDto<Product>> {

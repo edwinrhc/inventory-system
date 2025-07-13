@@ -46,13 +46,13 @@ export class ProductsController {
     return this.service.create(dto);
   }
 
- /* @Get()
+  @Get('listar-sin-paginar')
   @Roles(Role.ADMIN, Role.VENDOR, Role.SUPPLIER)
-  @ApiOperation({ summary: 'Listar todos los productos' })
-  @ApiResponse({ status: 200, description: 'Lista de productos.' })
-  findAll() {
-    return this.service.findAll();
-  }*/
+  @ApiOperation({ summary: 'Listar todos los productos sin paginar' })
+  @ApiResponse({ status: 200, description: 'Lista de productos sin paginar.' })
+  listarTodoSinPaginar() {
+    return this.service.listarTodoSinPaginar();
+  }
 
   //Note: Con Paginación
   @Get()
