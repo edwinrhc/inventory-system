@@ -11,6 +11,8 @@ import { Transaction } from '../inventory/entities/transaction.entity';
 import { ProductType } from '../product-types/entities/product-type.entity';
 import { InventoryDocument } from '../inventory/entities/inventory-document.entity';
 import { InventoryLine } from '../inventory/entities/inventory-line.entity';
+import { SequenceService } from '../inventory/sequence.service';
+import { InventorySequence } from '../inventory/entities/sequence.entity';
 
 const seedDataSourceOptions: DataSourceOptions = {
   type: 'mysql',
@@ -165,12 +167,14 @@ async function runSeeds() {
   const docRepo  = ds.getRepository(InventoryDocument);
   const lineRepo = ds.getRepository(InventoryLine);
 
+  const sequenceSvc = new SequenceService(ds.getRepository(InventorySequence))
+  const nextRefIn = await sequenceSvc.next('IN')
   // 5.1) Creamos una guía de ingreso con 2 líneas
 
   const docIn = docRepo.create({
     type:      'IN' as const,
     date:      new Date(),
-    reference: 'SEED-IN-001',
+    reference: nextRefIn,
     notes:     'Ingreso semilla',
     userId:    adminUser.id,
     createdBy: adminUser,
@@ -184,10 +188,11 @@ async function runSeeds() {
   console.log(`✅ Documento IN creado: ${docIn.id}`);
 
   // 5.2) Creamos una guía de salida con 1 línea
+  const nextRefOut = await sequenceSvc.next('OUT')
   const docOut = docRepo.create({
     type:      'OUT' as const,
     date:      new Date(),
-    reference: 'SEED-OUT-001',
+    reference: nextRefOut,
     notes:     'Salida semilla',
     userId:    adminUser.id,
     createdBy: adminUser,

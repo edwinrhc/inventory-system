@@ -12,6 +12,7 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateInventoryDocumentDto } from './dto/create-inventory-document.dto';
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from 'src/common/dto/page-options.dto';
+import { SequenceService } from './sequence.service';
 
 @Injectable()
 export class InventoryDocsService {
@@ -25,6 +26,7 @@ export class InventoryDocsService {
     @InjectRepository(InventoryItem)
     private readonly itemRepo: Repository<InventoryItem>,
     private readonly dataSource: DataSource,
+    private readonly seqSvc: SequenceService,
   ) {}
 
   async createDocument(
@@ -38,9 +40,11 @@ export class InventoryDocsService {
 
     try {
       // 1) Construir manualmente la entidad de documento
+      const reference = await this.seqSvc.next(dto.type);
+
       const doc = new InventoryDocument();
       doc.type      = dto.type;
-      doc.reference = dto.reference;
+      doc.reference = reference;
       doc.date      = new Date(dto.date);
       doc.notes     = dto.notes;
       doc.userId    = userId;                        // ← ¡asignación explícita!
@@ -104,5 +108,12 @@ export class InventoryDocsService {
 
   }
 
+  async getNextReference(type: 'IN' | 'OUT'): Promise<string> {
+    return this.seqSvc.next(type);
+  }
+
+  async peekNextReference(type: 'IN'|'OUT'): Promise<string> {
+    return this.seqSvc.peek(type);
+  }
 
 }
