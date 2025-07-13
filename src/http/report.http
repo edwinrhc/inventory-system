@@ -1,0 +1,8 @@
+@host = http://localhost:3000
+@prefix = api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjhkY2MxZi00M2JmLTRjOWItYmIzOC05N2M1YmE0YmU5NDUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI0MzUzNDgsImV4cCI6MTc1MjQzODk0OH0.DGNxsrx1f8A_9fBBxtKSBNMdLl7KRG5FWBG4uadnNrY
+
+
+### Listar Ingreso y salida
+GET {{host}}/{{prefix}}/report/stock
+Authorization: Bearer {{token}}

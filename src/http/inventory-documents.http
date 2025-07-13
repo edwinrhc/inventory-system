@@ -1,6 +1,6 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzOTU4ZThkMy0zYTgwLTQyNDctYmViNi1kNzFhODA0MDYwYzgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTIzNDA3NTksImV4cCI6MTc1MjM0NDM1OX0.asg6oOmaHo7L2qKXA8bQl00Uul_T2ZCzNdh7B3Kptlw
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNTlhYzFkOS1iMDZhLTRhNTQtOGRiMy1iMzYxMzM3NTQ4MGQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI0MzQwMDgsImV4cCI6MTc1MjQzNzYwOH0.f5kXgyMJ3iItiFkMKSn2imMf3lbrO8bxtXeqY2mj4_Q
 
 
 ### Listar Ingreso y salida
