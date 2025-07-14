@@ -1,8 +1,12 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjhkY2MxZi00M2JmLTRjOWItYmIzOC05N2M1YmE0YmU5NDUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI0MzUzNDgsImV4cCI6MTc1MjQzODk0OH0.DGNxsrx1f8A_9fBBxtKSBNMdLl7KRG5FWBG4uadnNrY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYTNmYzZjZS0zNDgyLTQ4ZTQtYWVhYi03ZWE0OTMxNzg3YmIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI0NDYyNjksImV4cCI6MTc1MjQ0OTg2OX0.fv-8aV4eLjbwfcvFh0lGUW2Ih_HME2Fd-HkMNSpRYw4
 
 
-### Listar Ingreso y salida
-GET {{host}}/{{prefix}}/report/stock
+### Listar Ingreso y salida Sin pagina
+GET {{host}}/{{prefix}}/report/stock-sin-page
+Authorization: Bearer {{token}}
+
+### LISTAR INGRESO Y SALIDA CON PAGINA
+GET {{host}}/{{prefix}}/report/stock?page=1&limit=10&filter=cúter
 Authorization: Bearer {{token}}

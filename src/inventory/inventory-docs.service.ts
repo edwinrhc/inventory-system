@@ -1,8 +1,9 @@
 // src/inventory/inventory-docs.service.ts
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
+  Logger, NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InventoryDocument } from './entities/inventory-document.entity';
@@ -63,15 +64,33 @@ export class InventoryDocsService {
       const savedDoc = await runner.manager.save(doc);
 
       // 4) Ajustar el stock por cada línea
-      for (const line of savedDoc.lines) {
+
+      for (const line of savedDoc.lines){
+        const productId = line.productId;
+        // Consulta el stock actual
+        const inventoryItem = await runner.manager.findOne(InventoryItem,{
+          where: { productId}
+        });
+        if(!inventoryItem){
+           throw new NotFoundException(`No hay registro de inventario para el producto ${productId}`);
+        }
+        const currentQty = inventoryItem.quantity;
         const delta = dto.type === 'IN' ? line.quantity : -line.quantity;
+        // Validar que no quede stock negativo
+        if (dto.type === 'OUT' && currentQty < line.quantity) {
+          throw new BadRequestException(
+            `Stock insuficiente para el producto ${productId}. Stock actual: ${currentQty}, solicitado: ${line.quantity}`,
+          );
+        }
+        // Aplicar la modificación al stock
         await runner.manager
           .createQueryBuilder(InventoryItem, 'item')
           .update()
           .set({ quantity: () => `quantity + ${delta}` })
-          .where('productId = :pid', { pid: line.productId })
+          .where('productId = :pid', { pid: productId })
           .execute();
       }
+
 
       // 5) Confirmar transacción
       await runner.commitTransaction();
