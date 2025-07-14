@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TransactionsModule } from './inventory/transactions.module';
 import { ProductTypesModule } from './product-types/product-types.module';
 import { ReportsModule } from './reports/reports.module';
+import { InventoryItemsModule } from './inventory-items/inventory-items.module';
 
 
 @Module({
@@ -25,6 +26,7 @@ import { ReportsModule } from './reports/reports.module';
     AuthModule,
     ProductTypesModule,
     ReportsModule,
+    InventoryItemsModule,
 
 
   ],

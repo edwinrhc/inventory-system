@@ -1,6 +1,6 @@
 // src/inventory/inventory-docs.service.ts
 import {
-  BadRequestException,
+  BadRequestException, HttpException,
   Injectable,
   InternalServerErrorException,
   Logger, NotFoundException,
@@ -14,6 +14,7 @@ import { CreateInventoryDocumentDto } from './dto/create-inventory-document.dto'
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from 'src/common/dto/page-options.dto';
 import { SequenceService } from './sequence.service';
+import { CreateInventoryResult } from './dto/create-inventory-result.dto';
 
 @Injectable()
 export class InventoryDocsService {
@@ -30,22 +31,24 @@ export class InventoryDocsService {
     private readonly seqSvc: SequenceService,
   ) {}
 
+
+
   async createDocument(
     dto: CreateInventoryDocumentDto,
     userId: string,
-  ): Promise<InventoryDocument> {
-    // Creamos un query runner para transacción
+  ): Promise<{document: InventoryDocument; warnings: string[]}>{
     const runner = this.dataSource.createQueryRunner();
     await runner.connect();
     await runner.startTransaction();
 
-    try {
+    try{
       // 1) Construir manualmente la entidad de documento
       const reference = await this.seqSvc.next(dto.type);
-
       const doc = new InventoryDocument();
+
       doc.type      = dto.type;
       doc.reference = reference;
+      // doc.reference = dto.reference;
       doc.date      = new Date(dto.date);
       doc.notes     = dto.notes;
       doc.userId    = userId;                        // ← ¡asignación explícita!
@@ -63,51 +66,53 @@ export class InventoryDocsService {
       // 3) Guardar el documento con cascade de líneas
       const savedDoc = await runner.manager.save(doc);
 
-      // 4) Ajustar el stock por cada línea
-
+      // === Validar stock para todas las líneas de salida ===
+      if(dto.type === 'OUT'){
+        for(const line of savedDoc.lines){
+          const item = await runner.manager.findOne(InventoryItem,{
+            where: { productId: line.productId}
+          });
+          if(!item){
+            throw new NotFoundException(`No hay registro de inventario para el producto ${line.productId}`);
+          }
+          if(line.quantity > item.quantity){
+            throw new BadRequestException(
+              `Stock insuficiente para producto ` +
+              `Solicitado: ${line.quantity}, disponible: ${item.quantity}`
+            );
+          }
+        }
+      }
       for (const line of savedDoc.lines){
-        const productId = line.productId;
-        // Consulta el stock actual
-        const inventoryItem = await runner.manager.findOne(InventoryItem,{
-          where: { productId}
-        });
-        if(!inventoryItem){
-           throw new NotFoundException(`No hay registro de inventario para el producto ${productId}`);
-        }
-        const currentQty = inventoryItem.quantity;
-        const delta = dto.type === 'IN' ? line.quantity : -line.quantity;
-        // Validar que no quede stock negativo
-        if (dto.type === 'OUT' && currentQty < line.quantity) {
-          throw new BadRequestException(
-            `Stock insuficiente para el producto ${productId}. Stock actual: ${currentQty}, solicitado: ${line.quantity}`,
-          );
-        }
-        // Aplicar la modificación al stock
+        const delta = dto.type === 'IN'
+          ? line.quantity :
+          -line.quantity;
         await runner.manager
           .createQueryBuilder(InventoryItem, 'item')
           .update()
           .set({ quantity: () => `quantity + ${delta}` })
-          .where('productId = :pid', { pid: productId })
+          .where('productId = :pid', { pid: line.productId })
           .execute();
       }
-
-
-      // 5) Confirmar transacción
+      // === Commit final ===
       await runner.commitTransaction();
-      return savedDoc;
+      return { document: savedDoc, warnings: [] };
 
-    } catch (error) {
-      // Si algo falla, anula todo para no dejar datos a medias
+    }catch (error) {
       await runner.rollbackTransaction();
       this.logger.error('Error en createDocument', error.stack);
+      // Si ya es una excepción HTTP (BadRequest, NotFound...), relánzala
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException(
         'No se pudo crear documento de inventario',
       );
     } finally {
       await runner.release();
     }
-  }
 
+  }
 
   async findAll(pageOptions: PageOptionsDto): Promise<PageDto<InventoryDocument>>{
     const { page, limit, filter} = pageOptions;

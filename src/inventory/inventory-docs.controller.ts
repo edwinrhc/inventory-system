@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
@@ -37,17 +37,31 @@ export class InventoryDocsController {
   }
 
 
+  // @ts-ignore
   @Post()
   @Roles(Role.ADMIN, Role.VENDOR)
   @ApiOperation({ summary: 'Crear guía de Ingreso/Salida' })
-  create(
+  async create(
     @Body() dto: CreateInventoryDocumentDto,
-    @GetUserId() userId: string,     // ← recupera directamente
+    @Request() req,  // ← recupera directamente
     // @Req() req,
   ) {
     // console.log('REQ.USER ➜', req.user);
     // return this.docsService.createDocument(dto, req.userId);
-    return this.docsService.createDocument(dto, userId);
+    // const userId = req.user?.id;
+    const userId = req.user.userId;
+    const { document, warnings } = await this.docsService.createDocument(dto,userId);
+    // return this.docsService.createDocument(dto, userId);
+    // Construye aquí el mensaje final según warnings
+    const message = warnings.length > 0
+      ? 'Documento creado con alertas de stock'
+      : 'Documento creado correctamente';
+    return {
+      data: document,
+      warnings,
+      message: warnings.length
+      ? 'Documento creado con alertas de stock' : 'Documento creado correctamente'
+    }
   }
 
   @Get()
@@ -57,9 +71,6 @@ export class InventoryDocsController {
     @Query()pageOptions: PageOptionsDto): Promise<PageDto<InventoryDocument>>{
      return this.docsService.findAll(pageOptions);
   }
-
-
-
 
 
 

@@ -1,0 +1,8 @@
+@host = http://localhost:3000
+@prefix = api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNzIxNDNiMi1lY2YzLTQ4NjctODI4MS02ZDBkMzAyN2JjMTMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI1MzQyNjQsImV4cCI6MTc1MjUzNzg2NH0.FrmeEA09xJHb99e_72vxLJDsiOaFVkGB3SpBY1loAKA
+@id  = fefb36ae-e992-446a-b8a7-51a13c5549ed
+
+### Obtener un ítem por ID
+GET {{host}}/{{prefix}}/inventory-items/{{id}}
+Authorization: Bearer {{token}}

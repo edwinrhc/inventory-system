@@ -1,8 +1,30 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNTlhYzFkOS1iMDZhLTRhNTQtOGRiMy1iMzYxMzM3NTQ4MGQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI0MzQwMDgsImV4cCI6MTc1MjQzNzYwOH0.f5kXgyMJ3iItiFkMKSn2imMf3lbrO8bxtXeqY2mj4_Q
-
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNzIxNDNiMi1lY2YzLTQ4NjctODI4MS02ZDBkMzAyN2JjMTMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI1MzUzNzMsImV4cCI6MTc1MjUzODk3M30.nx19bSTqVLA8npvny3263zXnUTEzxg0gW1Ab1lfJRZc
+@IdProduct = fefb36ae-e992-446a-b8a7-51a13c5549ed
 
 ### Listar Ingreso y salida
 GET {{host}}/{{prefix}}/inventory-documents?page=1&limit=5
 Authorization: Bearer {{token}}
+
+
+### CREAR PRODUCTO (ADMIN/VENDOR)
+POST {{host}}/{{prefix}}/inventory-documents
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reference": "TEST-0001",
+  "type": "OUT",
+  "date": "2025-07-14",
+  "notes": "Prueba salida mayor stock",
+  "lines": [
+    {
+      "productId":"{{IdProduct}}",
+      "quantity": 120,
+      "unitPrice": 100,
+      "detail": "Intento de salida > stock"
+    }
+  ]
+}
+
