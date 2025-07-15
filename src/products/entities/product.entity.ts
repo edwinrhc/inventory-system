@@ -8,6 +8,7 @@ import {
 import { InventoryItem } from '../../inventory/entities/inventory.entity';
 import { ProductType } from '../../product-types/entities/product-type.entity';
 import { User } from 'src/users/entities/user.entity';
+import { InventoryLine } from '../../inventory/entities/inventory-line.entity';
 
 @Entity('products')
 export class Product {
@@ -28,10 +29,13 @@ export class Product {
   price: number;
 
   // ← Relación OneToMany: un producto puede tener muchos inventarios
-  @OneToMany(() => InventoryItem, inventory => inventory.product, {
-    cascade: ['remove'],    // opcional: activa borrado en cascada desde TypeORM
-  })
-  inventories: InventoryItem[];
+  // @OneToMany(() => InventoryItem, inventory => inventory.product, {
+  //   cascade: ['remove'],    // opcional: activa borrado en cascada desde TypeORM
+  // })
+  // inventories: InventoryItem[];
+
+  @OneToMany(() => InventoryLine, line => line.product)
+  inventories: InventoryLine[];
   
   @ManyToOne(() => ProductType, (type) => type.products, {nullable: true})
   @JoinColumn({name: 'productTypeId'})

@@ -1,6 +1,6 @@
 @host = http://localhost:3000
 @prefix = api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNzIxNDNiMi1lY2YzLTQ4NjctODI4MS02ZDBkMzAyN2JjMTMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI1MzUzNzMsImV4cCI6MTc1MjUzODk3M30.nx19bSTqVLA8npvny3263zXnUTEzxg0gW1Ab1lfJRZc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjOGQxYzVjMC0yOGFiLTRmNGEtYjU4ZC1jYzA4NGM5ZGZkMDQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI1NTY2NTksImV4cCI6MTc1MjU2MDI1OX0.9PvLWdVPhSqG0vS9oe4_qwL4TLDAiKKZBXPL3ZhSC3Q
 
 
 ### LISTAR TODOS LOS PRODUCTOS (CON TOKEN)
@@ -45,4 +45,25 @@ Content-Type: application/json
 
 ### ELIMINAR
 DELETE {{host}}/{{prefix}}/products/051f1fcf-3657-4275-ba2a-723447adc27a
+Authorization: Bearer {{token}}
+
+
+### Listar los productos activos
+GET {{host}}/{{prefix}}/products/select/active
+Authorization: Bearer {{token}}
+
+
+### Listar los productos activos
+GET {{host}}/{{prefix}}/products/select/active-with-stock
+Authorization: Bearer {{token}}
+
+
+
+### Listar los productos activos Páginador
+GET {{host}}/{{prefix}}/products/select/active-paginated?page=1&limit=10
+Authorization: Bearer {{token}}
+
+
+### Listar los productos activos Páginador
+GET {{host}}/{{prefix}}/products/select/active-with-stock-paginated?page=1&limit=10
 Authorization: Bearer {{token}}

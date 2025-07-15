@@ -4,25 +4,28 @@ import {
   Controller,
   Delete,
   Get,
-  Param, ParseBoolPipe,
+  Param,
   ParseUUIDPipe,
   Patch,
-  Post, Query,
-  UseGuards, UsePipes, ValidationPipe,
+  Post,
+  Query,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { AuthGuard }       from '@nestjs/passport';
-import { RolesGuard }      from '../auth/roles.guard';
-import { Roles }           from '../auth/roles.decorator';
-import { Role }            from '../users/role.enum';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '../users/role.enum';
 import {
   ApiBearerAuth,
-  ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiParam,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
 import { PageDto } from '../common/dto/page.dto';
@@ -109,6 +112,36 @@ export class ProductsController {
     @Body() dto: UpdateStatusDto
   ):Promise<Product>{
     return this.service.updateStatus(id,dto.isActive);
+  }
+
+  @Roles(Role.ADMIN,Role.VENDOR)
+  @ApiOperation({ summary: 'Listar productos activos' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @Get('select/active')
+  getActiveProducts(){
+    return this.service.getActiveProducts();
+  }
+
+  @Roles(Role.ADMIN,Role.VENDOR)
+  @ApiOperation({ summary: 'Listar productos activos y con stock' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @Get('select/active-with-stock')
+  getActiveProductsWithStock(){
+    return this.service.getActiveProductsWithStock();
+  }
+
+  @Roles(Role.ADMIN,Role.VENDOR)
+  @ApiOperation({ summary: 'Listar productos activos' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @Get('select/active-paginated')
+  getActiveProductsPaginated(@Query() pageOptions: PageOptionsDto) {
+    return this.service.getActiveProductsPaginated(pageOptions);
+  }
+
+  @Roles(Role.ADMIN,Role.VENDOR)
+  @Get('select/active-with-stock-paginated')
+  getActiveProductsWithStockPaginated(@Query() pageOptions: PageOptionsDto) {
+    return this.service.getActiveProductsWithStockPaginated(pageOptions);
   }
 
 }

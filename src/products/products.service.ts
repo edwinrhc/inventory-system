@@ -80,14 +80,112 @@ export class ProductsService {
   }
 
   async updateStatus(id: string, isActive: boolean): Promise<Product>{
-
     await this.repo.update(id, {isActive});
     return this.findOne(id);
-
   }
 
+  async getActiveProducts(): Promise<{id: string, name:string }[]>{
+    const products = await this.repo.find({
+      where: {isActive: true},
+      select: ['id', 'name']
+    });
+    return products;
+  }
 
+  async getActiveProductsPaginated(pageOptions: PageOptionsDto): Promise<PageDto<{ id: string; name: string }>> {
+    const { page, limit, filter } = pageOptions;
 
+    const qb = this.repo.createQueryBuilder('product')
+      .select(['product.id', 'product.name'])
+      .where('product.isActive = true');
 
+    if (filter) {
+      qb.andWhere('LOWER(product.name) LIKE LOWER(:filter)', { filter: `%${filter}%` });
+    }
+
+    qb.orderBy('product.name', 'ASC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [items, totalItems] = await qb.getManyAndCount();
+
+    return new PageDto(items, totalItems, { page, limit }); // 👈 ESTA ES LA CLAVE
+  }
+
+  async getActiveProductsWithStock(): Promise<{ id: string; name: string; stock: number }[]> {
+    // Traemos productos activos con sus líneas y documentos relacionados
+    const products = await this.repo.find({
+      where: { isActive: true },
+      relations: ['inventories', 'inventories.document'],
+    });
+
+    const result = [];
+
+    for (const product of products) {
+      const lines = product.inventories;
+
+      const totalIn = lines
+        .filter(line => line.document.type === 'IN')
+        .reduce((sum, line) => sum + line.quantity, 0);
+
+      const totalOut = lines
+        .filter(line => line.document.type === 'OUT')
+        .reduce((sum, line) => sum + line.quantity, 0);
+
+      const stock = totalIn - totalOut;
+
+      if (stock > 0) {
+        result.push({
+          id: product.id,
+          name: product.name,
+          stock,
+        });
+      }
+    }
+
+    return result;
+  }
+
+  async getActiveProductsWithStockPaginated(pageOptions: PageOptionsDto): Promise<PageDto<{ id: string; name: string; stock: number }>> {
+    const { page, limit, filter } = pageOptions;
+
+    const qb = this.repo.createQueryBuilder('product')
+      .leftJoinAndSelect('product.inventories', 'inventory')
+      .leftJoinAndSelect('inventory.document', 'document')
+      .where('product.isActive = true');
+
+    if (filter) {
+      qb.andWhere('LOWER(product.name) LIKE LOWER(:filter)', { filter: `%${filter}%` });
+    }
+
+    qb.skip((page - 1) * limit).take(limit);
+
+    const [products, totalItems] = await qb.getManyAndCount();
+
+    const result = [];
+
+    for (const product of products) {
+      const lines = product.inventories;
+
+      const totalIn = lines
+        .filter(line => line.document.type === 'IN')
+        .reduce((sum, line) => sum + line.quantity, 0);
+
+      const totalOut = lines
+        .filter(line => line.document.type === 'OUT')
+        .reduce((sum, line) => sum + line.quantity, 0);
+
+      const stock = totalIn - totalOut;
+
+      if (stock > 0) {
+        result.push({
+          id: product.id,
+          name: product.name,
+          stock,
+        });
+      }
+    }
+    return new PageDto(result, result.length, { page, limit });
+  }
 
 }

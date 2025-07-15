@@ -16,7 +16,8 @@ export class InventoryLine {
   @Column('uuid')
   documentId: string;
 
-  @ManyToOne(() => Product)
+
+  @ManyToOne(() => Product, product => product.inventories)
   @JoinColumn({ name: 'productId' })
   product: Product;
 
