@@ -13,6 +13,7 @@ import { TransactionsModule } from './inventory/transactions.module';
 import { ProductTypesModule } from './product-types/product-types.module';
 import { ReportsModule } from './reports/reports.module';
 import { InventoryItemsModule } from './inventory-items/inventory-items.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 
 @Module({
@@ -27,6 +28,7 @@ import { InventoryItemsModule } from './inventory-items/inventory-items.module';
     ProductTypesModule,
     ReportsModule,
     InventoryItemsModule,
+    DashboardModule,
 
 
   ],

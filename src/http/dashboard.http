@@ -1,0 +1,21 @@
+@host = http://localhost:3000
+@prefix = api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjOGQxYzVjMC0yOGFiLTRmNGEtYjU4ZC1jYzA4NGM5ZGZkMDQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTI1NTY2NTksImV4cCI6MTc1MjU2MDI1OX0.9PvLWdVPhSqG0vS9oe4_qwL4TLDAiKKZBXPL3ZhSC3Q
+
+
+### COUNT
+GET {{host}}/{{prefix}}/dashboard/counts
+
+### STOCK-SUMMARY
+GET {{host}}/{{prefix}}/dashboard/stock-summary
+
+
+
+### MONTHLY-MOVEMENTS
+GET {{host}}/{{prefix}}/dashboard/monthly-movements?year=2025
+
+### LOW-STOCK
+GET {{host}}/{{prefix}}/dashboard/low-stock?threshold=8
+
+### TOP-MOVING
+GET {{host}}/{{prefix}}/dashboard/top-moving?limit=7
